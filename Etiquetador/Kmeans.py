@@ -34,7 +34,21 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.X = np.random.rand(100, 5)
+        
+        # Ensure X is a numpy array
+        if type(X) is list:
+            X = np.array(X)
+            
+        # Ensure all values are float
+        X = X.astype(float)
+        
+        # If X has more than 2 dimensions, reshape it to 2D
+        if X.ndim > 2:
+            X = X.reshape(-1, X.shape[-1])
+            
+        # Assign X to self.X
+        self.X = X
+
 
     def _init_options(self, options=None):
         """
