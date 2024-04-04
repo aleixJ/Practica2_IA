@@ -78,19 +78,42 @@ class KMeans:
 
     def _init_centroids(self):
         """
-        Initialization of centroids
+        Initialization of centroids based on the initialization method defined in self.options['km_init']
+        - 'first': selects the first K points as centroids
+        - 'random': selects K random points as centroids
+        - 'custom': selects K points as centroids based on a costum method:
+                    select the last K points as centroids
         """
-
+        
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
+        self.centroids = []
         if self.options['km_init'].lower() == 'first':
-            self.centroids = np.random.rand(self.K, self.X.shape[1])
-            self.old_centroids = np.random.rand(self.K, self.X.shape[1])
-        else:
-            self.centroids = np.random.rand(self.K, self.X.shape[1])
-            self.old_centroids = np.random.rand(self.K, self.X.shape[1])
+            for elem in self.X:
+                if not any(np.array_equal(elem, centroid) for centroid in self.centroids): # Check if elem is already in centroids
+                    self.centroids.append(elem)
+                if len(self.centroids) == self.K:
+                    break
+
+        elif self.options['km_init'].lower() == 'random':
+            num_elements = self.X.shape[0]
+            # Choose K random elements from X
+            while len(self.centroids) < self.K:
+                elem = self.X[np.random.randint(num_elements)]
+                if not any(np.array_equal(elem, centroid) for centroid in self.centroids):
+                    self.centroids.append(elem)
+
+        elif self.options['km_init'].lower() == 'custom':
+            for elem in self.X[::-1]:
+                if not any(np.array_equal(elem, centroid) for centroid in self.centroids):
+                    self.centroids.append(elem)
+                if len(self.centroids) == self.K:
+                    break
+
+        self.centroids = np.array(self.centroids)
+        self.old_centroids = np.array(self.centroids)
 
     def get_labels(self):
         """
