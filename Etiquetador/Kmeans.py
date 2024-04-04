@@ -1,5 +1,5 @@
-__authors__ = 'TO_BE_FILLED'
-__group__ = 'TO_BE_FILLED'
+__authors__ = ["1635892","1633686","1634264"]
+__group__ = 'nose'
 
 import numpy as np
 import utils
