@@ -167,12 +167,26 @@ class KMeans:
         """
         Runs K-Means algorithm until it converges or until the number of iterations is smaller
         than the maximum number of iterations.
+        The algorithm consists of the following steps:
+            1. Find the closest centroid for each point in X
+            2. Calculate the new centroids
+            3. Increment the number of iterations
+            4. Check if the algorithm converges
         """
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        pass
+
+        self._init_centroids()
+        while self.num_iter < self.options['max_iter']:
+            self.get_labels()
+            self.get_centroids()
+            if self.converges():
+                break
+            self.num_iter += 1
+        
+        
 
     def withinClassDistance(self):
         """
