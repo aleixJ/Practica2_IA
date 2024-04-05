@@ -251,4 +251,15 @@ def get_colors(centroids):
     ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
     ##  AND CHANGE FOR YOUR OWN CODE
     #########################################################
-    return list(utils.colors)
+
+    # 'utils.colors' is a list of the 11 basic colors
+    # 'utils.get_color_prob' returns the probability of each color for each centroid
+    # 'np.argmax' returns the index of the maximum value in an array
+
+    # Step 1: Convert the RGB values of the centroids to the 11D color space
+    color_probs = utils.get_color_prob(centroids)
+
+    # Step 2: For each centroid, find the color that has the maximum probability
+    labels = [utils.colors[np.argmax(color_prob)] for color_prob in color_probs]
+
+    return labels
