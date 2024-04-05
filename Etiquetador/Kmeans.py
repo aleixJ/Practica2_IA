@@ -153,13 +153,15 @@ class KMeans:
 
     def converges(self):
         """
-        Checks if there is a difference between current and old centroids
+        Checks if there is a difference between current and old centroids.
+        Returns True if there is no difference, False otherwise
         """
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        return True
+        
+        return np.all(self.centroids == self.old_centroids)
 
     def fit(self):
         """
