@@ -181,20 +181,28 @@ class KMeans:
 def distance(X, C):
     """
     Calculates the distance between each pixel and each centroid
+
     Args:
         X (numpy array): PxD 1st set of data points (usually data points)
         C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
 
     Returns:
-        dist: PxK numpy array position ij is the distance between the
-        i-th point of the first set an the j-th point of the second set
+        dist (numpy array): PxK numpy array where position (i, j) is the distance between the
+        i-th point of the first set and the j-th point of the second set
     """
 
-    #########################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #########################################################
-    return np.random.rand(X.shape[0], C.shape[0])
+    # 'linalg.norm' calculates the euclidean distance between two points
+
+    ### Option 1 ###
+    # dist = np.linalg.norm(X[:, None] - C, axis=2)
+    # return dist
+
+    ### Option 2 ###
+    dist = np.zeros((X.shape[0], C.shape[0]))
+    for i in range(X.shape[0]):
+        for j in range(C.shape[0]):
+            dist[i, j] = np.linalg.norm(X[i] - C[j])
+    return dist
 
 
 def get_colors(centroids):
