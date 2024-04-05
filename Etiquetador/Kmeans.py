@@ -123,7 +123,16 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.labels = np.random.randint(self.K, size=self.X.shape[0])
+        
+        # 'self.labels' (numpy array): 1xD numpy array where position i is the label of the centroid closest to the i-th point.
+
+        # 'linalg.norm' calculates the euclidean distance between two points
+        # 'argmin' returns the index of the minimum value along an axis. In this case, it returns the index of the closest centroid to each point in 'X
+
+        self.labels = np.zeros(self.X.shape[0])
+        for i in range(self.X.shape[0]):
+            distances = np.linalg.norm(self.X[i] - self.centroids, axis=1)
+            self.labels[i] = np.argmin(distances)
 
     def get_centroids(self):
         """
