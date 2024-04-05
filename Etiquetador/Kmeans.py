@@ -191,23 +191,59 @@ class KMeans:
     def withinClassDistance(self):
         """
          returns the within class distance of the current clustering
+         Formula:
+                    WCD = \frac{1}{N} \sum_{x \in X} distance(x, C_x)^2
+                    Cx is the vector representing the cluster to which point x belongs.
         """
 
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        pass
+
+        # 'distance' calculates the distance between each pixel and each centroid
+        # @ is the dot product between two vectors
+
+        distance = 0
+        for i in range(self.X.shape[0]):
+            distance += (self.X[i] - self.centroids[int(self.labels[i])]) @ (self.X[i] - self.centroids[int(self.labels[i])])
+        return distance / self.X.shape[0]
+
 
     def find_bestK(self, max_K):
         """
-         sets the best k analysing the results up to 'max_K' clusters
+         sets the best k analysing the results up to 'max_K' clusters.
+         Executes the KMeans algorithm for each number of clusters from 2 to max_K and selects the best one
+         Args:
+                max_K (int): maximum number of clusters to be analysed
+        
         """
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        pass
+
+        # 'wcd' (list): list of within class distances for each K
+
+        wcd = []
+        dec_ans = 0
+
+        # Iterate over all possible K values
+        for i in range(2, max_K+1):
+            # Set the current K
+            self.K = i
+            # Run the KMeans algorithm
+            self.fit()
+
+            # Calculate the WCD and append it to the list
+            wcd.append(self.withinClassDistance())
+
+            # Check if the WCD has decreased less than 20% in the last iteration
+            if len(wcd) > 1:
+               dec = 100-100*(wcd[-1]/wcd[-2])
+               if dec < 20:
+                self.K = i - 1
+                break
 
 
 def distance(X, C):
