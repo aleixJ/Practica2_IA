@@ -136,13 +136,20 @@ class KMeans:
 
     def get_centroids(self):
         """
-        Calculates coordinates of centroids based on the coordinates of all the points assigned to the centroid
+        Calculates coordinates of centroids based on the coordinates of all the points assigned to the centroid.
+        Assigns self.centroids to the new centroids and self.old_centroids to the old centroids
         """
         #######################################################
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        pass
+        
+        # 'self.centroids' (numpy array): KxD numpy array where position i is the coordinates of the i-th centroid.
+        
+        self.old_centroids = self.centroids
+        self.centroids = np.zeros((self.K, self.X.shape[1]))
+        for i in range(self.K):
+            self.centroids[i] = np.mean(self.X[self.labels == i], axis=0)
 
     def converges(self):
         """
