@@ -129,10 +129,15 @@ class KMeans:
         # 'linalg.norm' calculates the euclidean distance between two points
         # 'argmin' returns the index of the minimum value along an axis. In this case, it returns the index of the closest centroid to each point in 'X
 
-        self.labels = np.zeros(self.X.shape[0])
-        for i in range(self.X.shape[0]):
-            distances = np.linalg.norm(self.X[i] - self.centroids, axis=1)
-            self.labels[i] = np.argmin(distances)
+        # Expand dimensions of 'self.X' and 'self.centroids' for broadcasting
+        X_expanded = np.expand_dims(self.X, axis=1)
+        centroids_expanded = np.expand_dims(self.centroids, axis=0)
+
+        # Calculate the Euclidean distance from each point to each centroid
+        distances = np.linalg.norm(X_expanded - centroids_expanded, axis=-1)
+
+        # Assign each point to the closest centroid
+        self.labels = np.argmin(distances, axis=1)
 
     def get_centroids(self):
         """
