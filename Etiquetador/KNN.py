@@ -56,7 +56,7 @@ class KNN:
 
         # Calculate distance between test_data and train_data
         distances = cdist(test_data, self.train_data)
-
+        
         # Get the indices of the K nearest neighbors for each test sample
         indices = np.argsort(distances, axis=1)[:, :k]
 
@@ -74,12 +74,29 @@ class KNN:
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
         biggest_classes = []
+        
+        # iterem per cada element
         for n in self.neighbors:
-            unique_items, counts = np.unique(n, return_counts=True)
-            max_counts_index = np.argmax(counts)
-            biggest_classes.append(self.labels[unique_items[max_counts_index]])
+            dict_n = {}
+            biggest = n[0]
             
-        print(biggest_classes)
+            # creem un diccionari a on guardarèm el nombre de repeticions de cada
+            for i in n:
+                if i in dict_n.keys():
+                    dict_n.update({i : dict_n[i] + 1})
+                else:
+                    dict_n.update({i: 1})
+            
+            # Mirem quin es el nombre màxim de repeticions:
+            # NOTA: no podem fer aixó dins de l'altre bucle sense tindre en compte que en cas d'empat s'agafa la mès propera si ho fem 
+            #       així sabem que el diccionari estarà ordenar per el que te el primer nodre mès proper (si no s'enten preguntar a Jan).
+            for i in dict_n.keys():
+                if dict_n[i] > dict_n[biggest]:
+                    biggest = i
+            
+            # Gaurdem el resultat 
+            biggest_classes.append(biggest)
+
         return np.array(biggest_classes)
 
     def predict(self, test_data, k):
