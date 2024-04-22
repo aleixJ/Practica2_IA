@@ -65,7 +65,14 @@ class KNN:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        return np.random.randint(10, size=self.neighbors.size), np.random.random(self.neighbors.size)
+        biggest_classes = []
+        for n in self.neighbors:
+            unique_items, counts = np.unique(n, return_counts=True)
+            max_counts_index = np.argmax(counts)
+            biggest_classes.append(self.labels[unique_items[max_counts_index]])
+            
+        print(biggest_classes)
+        return np.array(biggest_classes)
 
     def predict(self, test_data, k):
         """
