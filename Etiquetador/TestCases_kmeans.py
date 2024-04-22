@@ -9,7 +9,7 @@ class TestCases(unittest.TestCase):
 
     def setUp(self):
         np.random.seed(123)
-        with open('./test/test_cases_kmeans.pkl', 'rb') as f:
+        with open('Etiquetador/test/test_cases_kmeans.pkl', 'rb') as f:
             self.test_cases = pickle.load(f)
 
     def test_01_NIU(self):

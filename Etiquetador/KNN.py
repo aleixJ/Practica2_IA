@@ -1,5 +1,5 @@
-__authors__ = 'TO_BE_FILLED'
-__group__ = 'TO_BE_FILLED'
+__authors__ = ["1635892","1633686","1634264"]
+__group__ = 'nose'
 
 import numpy as np
 import math
@@ -25,7 +25,21 @@ class KNN:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.train_data = np.random.randint(8, size=[10, 4800])
+
+
+        # Make numpy array   
+        X = np.array(train_data)
+            
+        # Ensure all values are float
+        X = X.astype(float)
+            
+        # Group the data
+        P, M, N = X.shape
+        X = X.reshape(P, N*M)
+        
+        self.train_data = X
+        
+        
 
     def get_k_neighbours(self, test_data, k):
         """
