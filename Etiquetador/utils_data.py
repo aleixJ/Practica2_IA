@@ -5,6 +5,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import math
 
+root_folder = './images/'
+json_file = './images/gt_reduced.json'
 
 def crop_images(images, upper, lower):
     cropped_image = []
@@ -13,7 +15,7 @@ def crop_images(images, upper, lower):
     return np.array(cropped_image, dtype=object)
 
 
-def read_extended_dataset(root_folder='./images/', extended_gt_json='./images/gt_reduced.json', w=60, h=80):
+def read_extended_dataset(root_folder=root_folder, extended_gt_json=json_file, w=60, h=80):
     """
         reads the extended ground truth, returns:
             images: the images in color (80x60x3)
@@ -50,7 +52,7 @@ def read_extended_dataset(root_folder='./images/', extended_gt_json='./images/gt
     return imgs, class_labels, color_labels, upper, lower, background
 
 
-def read_dataset(root_folder='./images/', gt_json='./test/gt.json', w=60, h=80, with_color=True):
+def read_dataset(root_folder=root_folder, gt_json=json_file, w=60, h=80, with_color=True):
     """
         reads the dataset (train and test), returns the images and labels (class and colors) for both sets
     """
