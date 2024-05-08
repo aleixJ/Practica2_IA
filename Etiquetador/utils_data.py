@@ -114,7 +114,7 @@ def read_one_img(img_name, w, h, with_color):
 def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None):
     def add_border(color):
         return np.stack(
-            [np.pad(imgs[i][:, :, c], 3, mode='constant', constant_values=color[c]) for c in range(3)], axis=2
+            [np.pad(imgs[i, :, :, c], 3, mode='constant', constant_values=color[c]) for c in range(3)], axis=2
         )
 
     columns = 4
