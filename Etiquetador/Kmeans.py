@@ -351,7 +351,6 @@ def distance(X, C):
             dist[i, j] = np.linalg.norm(X[i] - C[j])
     return dist
 
-
 def get_colors(centroids):
     """
     for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
@@ -378,3 +377,5 @@ def get_colors(centroids):
     labels = [utils.colors[np.argmax(color_prob)] for color_prob in color_probs]
 
     return labels
+
+
