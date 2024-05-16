@@ -245,10 +245,22 @@ class KMeans:
 
             # Check if the WCD has decreased less than 20% in the last iteration
             if len(wcd) > 1:
-               dec = 100-100*(wcd[-1]/wcd[-2])
-               if dec < 20:
-                self.K = i - 1
-                break
+                if self.Heuristica_WCD(wcd=wcd, i=i):
+                    break
+    
+    def Heuristica_WCD(self, wcd, i):
+        dec = 100-100*(wcd[-1]/wcd[-2])
+        if dec < 20:
+            self.K = i - 1
+            return True
+        return False
+
+    def Heuristica_2(self, wcd, i):
+        dec = 100-100*(wcd[-1]/wcd[-2])
+        if dec < 10:
+            self.K = i - 1
+            return True
+        return False
 
 
 def distance(X, C):
@@ -277,7 +289,6 @@ def distance(X, C):
             dist[i, j] = np.linalg.norm(X[i] - C[j])
     return dist
 
-
 def get_colors(centroids):
     """
     for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
@@ -304,3 +315,5 @@ def get_colors(centroids):
     labels = [utils.colors[np.argmax(color_prob)] for color_prob in color_probs]
 
     return labels
+
+
