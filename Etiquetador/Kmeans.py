@@ -63,7 +63,7 @@ class KMeans:
         if 'verbose' not in options:
             options['verbose'] = False
         if 'tolerance' not in options:
-            options['tolerance'] = 0
+            options['tolerance'] = 20
         if 'max_iter' not in options:
             options['max_iter'] = np.inf
         if 'fitting' not in options:
@@ -83,6 +83,12 @@ class KMeans:
         - 'random': selects K random points as centroids
         - 'custom': selects K points as centroids based on a costum method:
                     select the last K points as centroids
+        - 'kmeans++': selects K points as centroids based on the KMeans++ algorithm.
+                      The first centroid is chosen randomly and the rest are chosen based on the distance to the closest centroid
+        - 'normal': selects K points as centroids based on a normal distribution.
+                    The mean values are the mean values of the data and the standard deviation values are the standard deviation values of the data
+        - 'spread': selects K points as centroids based on a uniform distribution.
+                    The minimum values are the minimum values of the data and the maximum values are the maximum values of the data
         """
         
         #######################################################
@@ -105,12 +111,24 @@ class KMeans:
                 if not any(np.array_equal(elem, centroid) for centroid in self.centroids):
                     self.centroids.append(elem)
 
-        elif self.options['km_init'].lower() == 'custom':
+        elif self.options['km_init'].lower() == 'last':
             for elem in self.X[::-1]:
                 if not any(np.array_equal(elem, centroid) for centroid in self.centroids):
                     self.centroids.append(elem)
                 if len(self.centroids) == self.K:
                     break
+        elif self.options['km_init'].lower() == 'kmeans++':
+            # Choose first centroid randomly
+            self.centroids.append(self.X[np.random.randint(self.X.shape[0])])
+            # Choose the rest of the centroids
+            while len(self.centroids) < self.K:
+                # Calculate the distance of each point to the closest centroid
+                distances = distance(self.X, np.array(self.centroids))
+                # Calculate the probability of each point to be the next centroid
+                probs = np.min(distances, axis=1) ** 2
+                probs /= np.sum(probs)
+                # Choose the next centroid
+                self.centroids.append(self.X[np.random.choice(self.X.shape[0], p=probs)])
 
         self.centroids = np.array(self.centroids)
         self.old_centroids = np.array(self.centroids)
@@ -228,40 +246,84 @@ class KMeans:
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
 
-        # 'wcd' (list): list of within class distances for each K
+        if self.options['fitting'].lower() == 'wcd':
+            wcd = []
+            dec_ans = 0
 
-        wcd = []
-        dec_ans = 0
+            # Iterate over all possible K values
+            for i in range(2, max_K+1):
+                # Set the current K
+                self.K = i
+                # Run the KMeans algorithm
+                self.fit()
 
-        # Iterate over all possible K values
-        for i in range(2, max_K+1):
-            # Set the current K
-            self.K = i
-            # Run the KMeans algorithm
-            self.fit()
+                # Calculate the WCD and append it to the list
+                wcd.append(self.withinClassDistance())
 
-            # Calculate the WCD and append it to the list
-            wcd.append(self.withinClassDistance())
+                # Check if the WCD has decreased less than 20% in the last iteration
+                if len(wcd) > 1:
+                    dec = 100-100*(wcd[-1]/wcd[-2])
+                    if dec < self.options['tolerance']:
+                        self.K = i - 1
+                        break
+                       
+                            
+        # pip install scikit-learn  
+        elif self.options['fitting'].lower() == 'silhouette':
+            from sklearn.metrics import silhouette_score
+            sil = []
+            dec_ans = 0
 
-            # Check if the WCD has decreased less than 20% in the last iteration
-            if len(wcd) > 1:
-                if self.Heuristica_WCD(wcd=wcd, i=i):
-                    break
-    
-    def Heuristica_WCD(self, wcd, i):
-        dec = 100-100*(wcd[-1]/wcd[-2])
-        if dec < 20:
-            self.K = i - 1
-            return True
-        return False
+            # Iterate over all possible K values
+            for i in range(2, max_K+1):
+                # Set the current K
+                self.K = i
+                # Run the KMeans algorithm
+                self.fit()
 
-    def Heuristica_2(self, wcd, i):
-        dec = 100-100*(wcd[-1]/wcd[-2])
-        if dec < 10:
-            self.K = i - 1
-            return True
-        return False
+                # Calculate the silhouette score and append it to the list
+                self.get_labels()
+                sil.append(silhouette_score(self.X, self.labels))
 
+                # Check if the silhouette score has decreased less than 20% in the last iteration
+                if len(sil) > 1:
+                    dec = 100-100*(sil[-1]/sil[-2])
+                    if dec < self.options['tolerance']:
+                        self.K = i - 1
+                        break
+
+def silhouette_score(X, labels):
+    """
+    Calculates the silhouette score of a clustering
+    Args:
+        X (numpy array): PxD 1st set of data points (usually data points)
+        labels (numpy array): 1xD numpy array where position i is the label of the centroid closest to the i-th point.
+
+    Returns:
+        score (float): silhouette score of the clustering
+    """
+
+    # 'linalg.norm' calculates the euclidean distance between two points
+
+    # Calculate the distance between each point and each centroid
+    distances = distance(X, X)
+    # Calculate the distance between each point and the points of the same cluster
+    a = np.zeros(X.shape[0])
+    for i in range(X.shape[0]):
+        a[i] = np.mean(distances[i, labels == labels[i]])
+
+    # Calculate the distance between each point and the points of the other clusters
+    b = np.zeros(X.shape[0])
+    for i in range(X.shape[0]):
+        b[i] = np.min([np.mean(distances[i, labels == j]) for j in np.unique(labels) if j != labels[i]])
+
+    # Calculate the silhouette score
+    score = np.mean((b - a) / np.maximum(a, b))
+
+    return score
+
+
+        
 
 def distance(X, C):
     """

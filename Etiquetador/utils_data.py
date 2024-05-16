@@ -111,7 +111,7 @@ def read_one_img(img_name, w, h, with_color):
     return np.array(img)
 
 
-def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None):
+def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None, fac_size=1):
     def add_border(color):
         return np.stack(
             [np.pad(imgs[i, :, :, c], 3, mode='constant', constant_values=color[c]) for c in range(3)], axis=2
@@ -120,14 +120,14 @@ def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None):
     columns = 4
     rows = math.ceil(topN/columns)
     if query is not None:
-        fig = plt.figure(figsize=(10, 8*6/8))
+        fig = plt.figure(figsize=(10*fac_size, 6*fac_size))
         columns += 1
         fig.add_subplot(rows, columns, 1+columns)
         plt.imshow(query)
         plt.axis('off')
-        plt.title(f'query', fontsize=8)
+        plt.title(f'query', fontsize=8*fac_size)
     else:
-        fig = plt.figure(figsize=(8, 8*6/8))
+        fig = plt.figure(figsize=(8*fac_size, 6*fac_size))
 
     for i in range(min(topN, len(imgs))):
         sp = i+1
@@ -141,7 +141,7 @@ def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None):
         plt.imshow(im)
         plt.axis('off')
         if info is not None:
-            plt.title(f'{info[i]}', fontsize=8)
+            plt.title(f'{info[i]}', fontsize=8*fac_size/(1+len(imgs)*0.02))
     plt.gcf().suptitle(title)
     plt.show()
 
