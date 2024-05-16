@@ -112,16 +112,16 @@ class KMeans:
                 if len(self.centroids) == self.K:
                     break
         elif self.options['km_init'].lower() == 'kmeans++':
-            num_elements = self.X.shape[0]
-            self.centroids.append(self.X[np.random.randint(num_elements)])
+            num_elements = self.X.shape[0] #Here we select the first centroid 
+            self.centroids.append(self.X[np.random.randint(num_elements)]) # insert a random element in the centroids
             print(self.centroids)
             print(self.K)
-            while len(self.centroids) < self.K:
-                distances = distance(self.X, np.array(self.centroids))
-                min_distances = np.min(distances, axis=1)
-                probabilities = min_distances / np.sum(min_distances)
-                new_centroid = self.X[np.random.choice(self.X.shape[0], p=probabilities)]
-                self.centroids.append(new_centroid)
+            while len(self.centroids) < self.K: #Here we select the rest of the centroids
+                distances = distance(self.X, np.array(self.centroids)) #Calculate the distance between each point and each centroid
+                min_distances = np.min(distances, axis=1) #Select the minimum distance for each point
+                probabilities = min_distances / np.sum(min_distances) #Calculate the probability of each point to be selected as a centroid
+                new_centroid = self.X[np.random.choice(self.X.shape[0], p=probabilities)] #Select a new centroid based on the probabilities
+                self.centroids.append(new_centroid) #Add the new centroid to the list of centroids
         self.centroids = np.array(self.centroids)
         self.old_centroids = np.array(self.centroids)
 
