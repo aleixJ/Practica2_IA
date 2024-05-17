@@ -81,14 +81,9 @@ class KMeans:
         Initialization of centroids based on the initialization method defined in self.options['km_init']
         - 'first': selects the first K points as centroids
         - 'random': selects K random points as centroids
-        - 'custom': selects K points as centroids based on a costum method:
-                    select the last K points as centroids
+        - 'last': select the last K points as centroids
         - 'kmeans++': selects K points as centroids based on the KMeans++ algorithm.
                       The first centroid is chosen randomly and the rest are chosen based on the distance to the closest centroid
-        - 'normal': selects K points as centroids based on a normal distribution.
-                    The mean values are the mean values of the data and the standard deviation values are the standard deviation values of the data
-        - 'spread': selects K points as centroids based on a uniform distribution.
-                    The minimum values are the minimum values of the data and the maximum values are the maximum values of the data
         """
         
         #######################################################
@@ -118,17 +113,23 @@ class KMeans:
                 if len(self.centroids) == self.K:
                     break
         elif self.options['km_init'].lower() == 'kmeans++':
-            # Choose first centroid randomly
-            self.centroids.append(self.X[np.random.randint(self.X.shape[0])])
-            # Choose the rest of the centroids
-            while len(self.centroids) < self.K:
-                # Calculate the distance of each point to the closest centroid
-                distances = distance(self.X, np.array(self.centroids))
-                # Calculate the probability of each point to be the next centroid
-                probs = np.min(distances, axis=1) ** 2
-                probs /= np.sum(probs)
-                # Choose the next centroid
-                self.centroids.append(self.X[np.random.choice(self.X.shape[0], p=probs)])
+            
+            if self.X.size > 0:
+                # Choose first centroid randomly
+                self.centroids.append(self.X[np.random.randint(self.X.shape[0])])
+                # Choose the rest of the centroids
+                while len(self.centroids) < self.K:
+                    # Vectorized calculation of the distance of each point to the closest centroid
+                    distances = np.linalg.norm(self.X[:, np.newaxis] - np.array(self.centroids), axis=2)
+                    # Calculate the probability of each point to be the next centroid
+                    min_distances = np.min(distances, axis=1)
+                    probs = min_distances ** 2
+                    probs /= np.sum(probs)
+                    # Choose the next centroid
+                    self.centroids.append(self.X[np.random.choice(self.X.shape[0], p=probs)])
+            else:
+                raise ValueError("Input data is empty")
+            
 
         self.centroids = np.array(self.centroids)
         self.old_centroids = np.array(self.centroids)
