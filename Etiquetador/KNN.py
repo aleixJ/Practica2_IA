@@ -62,6 +62,9 @@ class KNN:
 
         # Get the labels of the K nearest neighbors
         self.neighbors = self.labels[indices]
+        
+        # Get the distances of the K nearest neighbors. Useful for weighted voting
+        self.distances = np.sort(distances, axis=1)[:, :k]
 
     def get_class(self):
         """
@@ -99,7 +102,7 @@ class KNN:
 
         return np.array(biggest_classes)
 
-    def predict(self, test_data, k):
+    def predict(self, test_data, k, option='simple'):
         """
         predicts the class at which each element in test_data belongs to
         :param test_data: array that has to be shaped to a NxD matrix (N points in a D dimensional space)
@@ -108,4 +111,43 @@ class KNN:
         """
 
         self.get_k_neighbours(test_data, k)
-        return self.get_class()
+        if option.lower() == 'simple':
+            return self.get_class()
+        elif option.lower() == 'weighted':
+            return self.get_class_weighted()
+    
+    
+    def get_class_weighted(self):
+        """
+        Get the class by distance-weighted voting. This method assigns a weight to each neighbor's vote 
+        based on its distance to the test point. Closer neighbors have a higher influence on the prediction.
+        
+        :return: A numpy array of shape (N, 1). For each of the rows in self.neighbors, 
+                 it gets the most voted value (i.e., the class to which that row belongs).
+        """
+        weighted_votes = []  # List to store the predicted class for each test point
+
+        # Iterate over each test point
+        for i in range(self.neighbors.shape[0]):
+            neighbor_labels = self.neighbors[i]  # Labels of the neighbors of the i-th test point
+            neighbor_distances = self.distances[i]  # Distances of the neighbors of the i-th test point
+            weight_dict = {}  # Dictionary to store the total weight of each class
+
+            # Iterate over each neighbor of the i-th test point
+            for j in range(len(neighbor_labels)):
+                label = neighbor_labels[j]  # Label of the j-th neighbor
+                distance = neighbor_distances[j]  # Distance of the j-th neighbor
+                weight = 1 / (distance + 1e-5)  # Weight of the j-th neighbor's vote (inverse of distance)
+
+                # Add the weight to the total weight of the corresponding class
+                if label in weight_dict:
+                    weight_dict[label] += weight
+                else:
+                    weight_dict[label] = weight
+
+            # Find the label with the maximum total weight and add it to the list of predictions
+            predicted_label = max(weight_dict.items(), key=lambda item: item[1])[0]
+            weighted_votes.append(predicted_label)
+
+        # Convert the list of predictions to a numpy array and return it
+        return np.array(weighted_votes)
