@@ -125,7 +125,7 @@ def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None, fa
         fig.add_subplot(rows, columns, 1+columns)
         plt.imshow(query)
         plt.axis('off')
-        plt.title(f'query', fontsize=8*fac_size)
+        plt.title(f'query', fontsize=7*fac_size)
     else:
         fig = plt.figure(figsize=(8*fac_size, 6*fac_size))
 
@@ -141,7 +141,7 @@ def visualize_retrieval(imgs, topN, info=None, ok=None, title='', query=None, fa
         plt.imshow(im)
         plt.axis('off')
         if info is not None:
-            plt.title(f'{info[i]}', fontsize=8*fac_size/(1+len(imgs)*0.02))
+            plt.title(f'{info[i]}', fontsize=7*fac_size/(1+len(imgs)*0.02))
     plt.gcf().suptitle(title)
     plt.show()
 
