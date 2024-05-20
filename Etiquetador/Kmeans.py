@@ -246,7 +246,6 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-
         if self.options['fitting'].lower() == 'wcd':
             wcd = []
             dec_ans = 0
@@ -270,7 +269,7 @@ class KMeans:
                        
                             
         # pip install scikit-learn  
-        elif self.options['fitting'].lower() == 'silhouette':
+        elif self.options['fitting'] == 'silhouette':
             from sklearn.metrics import silhouette_score
             sil = []
             dec_ans = 0
@@ -292,6 +291,32 @@ class KMeans:
                     if dec < self.options['tolerance']:
                         self.K = i - 1
                         break
+                    
+        elif self.options['fitting'] == 'fischer':
+
+            fis = []
+            dec_ans = 0
+            # Iterate over all possible K values
+            for i in range(2, max_K+1):
+                # Set the current K
+                self.K = i
+                # Run the KMeans algorithm
+                self.fit()
+
+                # Calculate the Fischer score and append it to the list
+                self.get_labels()
+
+                fis.append(fisher_score(self.X, self.labels))
+
+                # Check if the Fischer score has decreased less than 20% in the last iteration
+                if len(fis) > 1:
+                    dec = 100-100*(fis[-1]/fis[-2])
+                    if dec < self.options['tolerance']:
+                        self.K = i - 1
+                        break
+        else:
+            print("Wrong fitting function printed")
+            
 
 def silhouette_score(X, labels):
     """
@@ -325,6 +350,27 @@ def silhouette_score(X, labels):
 
 
         
+
+def fisher_score(X, labels):
+    overall_mean = np.mean(X, axis=0)
+    unique_labels = np.unique(labels)
+    K = len(unique_labels)
+    
+    between_class_variance = 0
+    within_class_variance = 0
+    
+    for label in unique_labels:
+        cluster_data = X[labels == label]
+        n_i = cluster_data.shape[0]
+        mean_i = np.mean(cluster_data, axis=0)
+        variance_i = np.var(cluster_data, axis=0)
+        
+        between_class_variance += n_i * np.sum((mean_i - overall_mean)**2)
+        within_class_variance += n_i * np.sum(variance_i)
+    
+    fisher_score = between_class_variance / within_class_variance
+    return fisher_score
+
 
 def distance(X, C):
     """
